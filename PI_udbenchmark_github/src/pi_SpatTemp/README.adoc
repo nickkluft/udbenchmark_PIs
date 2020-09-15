@@ -1,5 +1,5 @@
 
-# pi_sample_duration
+# pi_SpatTemp [Spatio Temporal Parameters]
 
 Python structure  done using https://github.com/bast/somepackage
 
@@ -24,11 +24,11 @@ And then run the following commands:
 
 [source, shell]
 ----
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-pip install -e src/pi_SpatTemp
-python src/pi_SpatTemp/setup.py develop
-./run_pi ./tests/data/input/subject_##_jointTrajectories_##.csv ./tests/data/input/subject_04_gaitEvents_01 ./tests/data/output
+>> python3 -m venv venv
+>> source venv/bin/activate
+>> pip install --upgrade pip
+>> pip install -r requirements.txt
+>> pip install -e src/pi_SpatTemp
+>> python src/pi_SpatTemp/setup.py develop
+>> run_pi ./tests/data/input/subject_##_jointTrajectories_##.csv ./tests/data/input/subject_##_gaitEvents_## ./tests/data/output
 ----
