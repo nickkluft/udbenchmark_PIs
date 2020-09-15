@@ -1,0 +1,6 @@
+#! /bin/bash
+
+echo "hello Eurobench world"
+
+run_pi "$@"
+
