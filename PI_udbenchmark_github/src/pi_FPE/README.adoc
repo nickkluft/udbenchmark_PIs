@@ -1,5 +1,5 @@
 
-# pi_sample_duration
+# pi_FPE [Foot Placement Estimator]
 
 Python structure  done using https://github.com/bast/somepackage
 
@@ -24,9 +24,10 @@ And then run the following commands:
 
 [source, shell]
 ----
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-pip install -e src/pi_FPE
+>> python3 -m venv venv
+>> source venv/bin/activate
+>> pip install --upgrade pip
+>> pip install -r requirements.txt
+>> pip install -e src/pi_FPE
+>> run_fpe file_joint file_com file_angularmomentum file_tensorofIcom file_gaitevents file_testbedrelatedinfo path_out
 ----
