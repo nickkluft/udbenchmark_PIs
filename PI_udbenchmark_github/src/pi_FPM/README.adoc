@@ -1,5 +1,5 @@
 
-# pi_sample_duration
+# pi_FPM [Foot Placement Model]
 
 Python structure  done using https://github.com/bast/somepackage
 
@@ -24,9 +24,10 @@ And then run the following commands:
 
 [source, shell]
 ----
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-pip install -e src/pi_FPM
+>> python3 -m venv venv
+>> source venv/bin/activate
+>> pip install --upgrade pip
+>> pip install -r requirements.txt
+>> pip install -e src/pi_FPM
+>> run_fpm file_joint file_com file_gaitevents path_out
 ----
