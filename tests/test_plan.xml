@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <test_plan>
+<!-- waiting ffor reference file
 <test pi_name="run_fpe"
       parameters="/in/subject_04_jointTrajectories_01.csv /in/subject_04_comTrajectories_01.csv /in/subject_04_angMomentum_01.csv /in/subject_04_comItensor_01.csv /in/subject_04_gaitEvents_01 /in/subject_04_testbedLabel_01.yaml /out"
       input_folder="data/input"
       output_folder="data/output/fpe"/>
+-->
 <test pi_name="run_fpm"
       parameters="/in/subject_04_jointTrajectories_01.csv /in/subject_04_comTrajectories_01.csv /in/subject_04_gaitEvents_01 /out"
       input_folder="data/input"
