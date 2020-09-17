@@ -20,8 +20,8 @@ def read_events(fname):
             yaml_eve = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
-            
-    
+
+
     l_toe_off = None
     r_toe_off = None
     l_heel_strike = None
