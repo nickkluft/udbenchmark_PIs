@@ -38,7 +38,9 @@ jobs:
     - name: test the Docker image
       env:
         TEST_PLAN: tests/test_plan.xml
-        DOCKER_IMAGE: eurobenchtest/${{ github.event.repository.name }}:latest
+        # not accepted as the repo contains uppercase letters
+        #DOCKER_IMAGE: eurobenchtest/${{ github.event.repository.name }}:latest
+        DOCKER_IMAGE: eurobenchtest/pi_udbenchmark:latest
       run:  python3 test_docker_call.py
 #    - name: Push to Docker hub
 #      env:
