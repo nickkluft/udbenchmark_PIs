@@ -109,9 +109,11 @@ def fFPE(phi,Jcom,hcom,g,m,omega,theta,vx,vy):
     fpefun = (Jcom/2+(m*t5*t8*t9)/2)*((Jcom*omega+m*t3*t7*hcom*(vx*np.cos(t4)+vy*np.sin(t4)))**2)*1/((Jcom+m*t5*t8*t9)**2)-g*m*t3*t7*hcom+g*m*t3*t7*hcom*np.cos(t4)
     return fpefun**2
     
-def store_result(file_out, value, sdvalue):
+def store_result(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'scalar\'\nvalue: ' + format(value, '.5f') + format(sdvalue, '.5f'))
+    file.write('type: \'vector\'\nvalues: ')
+    for line in value:
+        file.write('\n'+format(line[0], '.5f'))
     file.close()
     return True
 
@@ -213,12 +215,12 @@ def main():
     # load trail information file
     with open(file_in_trialinfo) as fileinfo:
     	trialinfo = yaml.full_load(fileinfo)
-    
+    # from joint data calculate the sampling frequency
+    fs = 1000/np.mean(np.diff(np.array(com.time)))
 
     class strct():
         pass
     rr = re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", trialinfo[1:-2])
-    print(rr)
     trlinfo = strct()
     if not(trialinfo.find('roll')):
         trlinfo.condition = 'pitch'
@@ -226,16 +228,21 @@ def main():
         trlinfo.condition = 'roll'
     trlinfo.tm_angle = int(rr[1])
     trlinfo.tm_speed = float(rr[3])
+    print('Reading condition...')
+    print('--> '+trlinfo.condition + ' ' + format(rr[1])+' deg')
+    print('--> speed '+ format(rr[3])+' m/s')
     mass = 81
     #  Estimate the foot placement using the foot placement estimator 
     fpe = calcFPE(joint,com,angmom,comIR,mass,trlinfo)
-    tos = np.vstack([events.l_heel_strike,events.r_heel_strike]).argsort
-    print(fpe[tos])
+    tos = np.hstack([events.l_heel_strike,events.r_heel_strike])
+    itos = np.round(np.sort(tos)*fs)
+    
+    
     file_out0 = folder_out + "/pi_fpe.yaml"
-    #if not store_result(file_out0, fpe[tos]):
-    #    return -1
-    #print(colored(
-    #    "duration: {} stored in {}".format(fpe[tos],file_out0),
-    #    "green"))
+    if not store_result(file_out0, fpe[itos.astype(int)]):
+        return -1
+    print(colored(
+        "Foot Placement Estimator: vector with size {}x1, stored in {}".format(int(tos.shape[0]),file_out0),
+        "green"))
     return 0
     
