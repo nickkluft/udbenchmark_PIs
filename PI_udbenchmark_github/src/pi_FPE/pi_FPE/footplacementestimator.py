@@ -128,6 +128,11 @@ USAGE = """usage: run_pi file_in_joint file_in_com file_in_angmom file_in_comIR 
 """
 
 def main():
+    if len(sys.argv) != 8:
+        print(colored("Wrong input parameters !", "red"))
+        print(colored(USAGE, "yellow"))
+        return -1
+
 #    joint,com,angMom,comIR,events,trialinfo
     file_in_joint = sys.argv[1]
     file_in_com = sys.argv[2]
@@ -137,10 +142,6 @@ def main():
     file_in_trialinfo = sys.argv[6]
     folder_out = sys.argv[7]    
     
-    if len(sys.argv) != 8:
-        print(colored("Wrong input parameters !", "red"))
-        print(colored(USAGE, "yellow"))
-        return -1
     
     # check input parameters are good
     if not os.path.exists(file_in_joint):

@@ -166,16 +166,17 @@ folder_out: folder where the PI yaml files will be stored
 """
 
 def main():
-    file_in_joint = sys.argv[1]
-    file_in_com = sys.argv[2]
-    file_in_events = sys.argv[3]
-    folder_out = sys.argv[4]    
-    
+
     if len(sys.argv) != 5:
         print(colored("Wrong input parameters !", "red"))
         print(colored(USAGE, "yellow"))
         return -1
-    
+
+    file_in_joint = sys.argv[1]
+    file_in_com = sys.argv[2]
+    file_in_events = sys.argv[3]
+    folder_out = sys.argv[4]
+
     # check input parameters are good
     if not os.path.exists(file_in_joint):
         print(colored("Input file {} does not exist".format(file_in_joint), "red"))

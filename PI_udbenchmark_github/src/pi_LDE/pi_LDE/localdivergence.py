@@ -107,14 +107,16 @@ folder_out: folder where the PI yaml files will be stored
 """
 
 def main():
-    file_in_com = sys.argv[1]
-    file_in_events = sys.argv[2]
-    folder_out = sys.argv[3]    
-    
+
     if len(sys.argv) != 4:
         print(colored("Wrong input parameters !", "red"))
         print(colored(USAGE, "yellow"))
         return -1
+
+    file_in_com = sys.argv[1]
+    file_in_events = sys.argv[2]
+    folder_out = sys.argv[3]    
+    
     
     # check input parameters are good
     if not os.path.exists(file_in_com):
