@@ -118,9 +118,13 @@ def store_result(file_out, value):
     return True
 
 USAGE = """usage: run_pi file_in_joint file_in_com file_in_angmom file_in_comIR file_in_events file_in_trialinfo folder_out
-file_in_joint: csv file containing the  positonal joint data
-file_in_events: csv file containing the  timing of gait events
-folder_out: folder where the PI yaml files will be stored
+-> file_in_joint: csv file containing the  positional joint data
+-> file_in_com: csv file containing the positional com data
+-> file_in_angmom: csv file containing the angular momentum relative to CoM data
+-> file_in_comIR: csv file containing the inertia tensor around CoM
+-> file_in_events: csv file containing the  timing of gait events
+-> file_in_trialinfo: trial info yaml file
+-> folder_out: folder where the PI yaml files will be stored
 """
 
 def main():
