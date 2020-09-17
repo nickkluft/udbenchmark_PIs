@@ -20,7 +20,9 @@ jobs:
 
     - name: Build the Docker image (PR)
       env:
-        REPO_NAME: ${{ github.event.repository.name }}
+        # not accepted as the repo contains uppercase letters
+        #REPO_NAME: ${{ github.event.repository.name }}
+        REPO_NAME: pi_udbenchmark
         REPO_BRANCH: ${{ github.head_ref }}
       run: docker build . --file Dockerfile --tag $REPO_NAME:$REPO_BRANCH
 
