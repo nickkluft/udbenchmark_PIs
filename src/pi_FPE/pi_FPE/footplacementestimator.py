@@ -242,7 +242,6 @@ def main():
     tos = np.hstack([events.l_heel_strike,events.r_heel_strike])
     itos = np.round(np.sort(tos)*fs)
     
-    
     file_out0 = folder_out + "/pi_fpe.yaml"
     if not store_result(file_out0, fpe[itos.astype(int)]):
         return -1
