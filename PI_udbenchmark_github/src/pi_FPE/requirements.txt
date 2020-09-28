@@ -1,6 +1,0 @@
-re
-PyYAML
-scipy
-numpy
-pandas
-termcolor

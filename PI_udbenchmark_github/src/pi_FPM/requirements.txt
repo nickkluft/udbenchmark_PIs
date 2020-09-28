@@ -1,6 +1,0 @@
-PyYAML
-scipy
-numpy
-pandas
-termcolor
-statsmodels
