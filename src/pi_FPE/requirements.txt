@@ -1,6 +1,3 @@
-# see https://stackoverflow.com/questions/20982961/trying-to-install-regular-expressions-for-python
-# re
-PyYAML
 scipy
 numpy
 pandas
