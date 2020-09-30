@@ -12,7 +12,6 @@ events = read_events("subject_##_cond_##_run_##_gaitEvents.yaml")
 Copyright (C) 2020 Vrije Universiteit Amsterdam (FGB-Human Movement Sciences)
 Distributed under the pache 2.0 license.
 """
-
 def read_events(fname):
     l_toe_off = None
     r_toe_off = None
@@ -24,13 +23,13 @@ def read_events(fname):
     for ieve in range(4):
         ibeg = txt.find("[")
         iend = txt.find("]")
-        if txt[ibeg-10:ibeg-1] in ["l_toe_off"]:
+        if txt[ibeg-11:ibeg-2] in ["l_toe_off"]:
             l_toe_off = eval(txt[ibeg:iend+1])
-        if txt[ibeg-10:ibeg-1] in ["r_toe_off"]:
+        if txt[ibeg-11:ibeg-2] in ["r_toe_off"]:
             r_toe_off = eval(txt[ibeg:iend+1])
-        if txt[ibeg-14:ibeg-1] in ["l_heel_strike"]:
+        if txt[ibeg-15:ibeg-2] in ["l_heel_strike"]:
             l_heel_strike = eval(txt[ibeg:iend+1])
-        if txt[ibeg-14:ibeg-1] in ["r_heel_strike"]:
+        if txt[ibeg-15:ibeg-2] in ["r_heel_strike"]:
             r_heel_strike = eval(txt[ibeg:iend+1])
         txt = txt[iend+1:]
     class strct():
@@ -41,7 +40,3 @@ def read_events(fname):
     events.l_heel_strike = l_heel_strike
     events.r_heel_strike = r_heel_strike
     return events
-
-
-
-

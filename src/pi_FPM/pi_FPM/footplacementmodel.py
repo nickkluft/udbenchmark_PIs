@@ -81,7 +81,7 @@ def calcFPM(joint,com,events,fs):
     walkdir = np.argmax(np.ptp(np.array(lfoot),axis=0))
     # walkdir = 0
     # get CoM in np.array structure
-    com_arr = np.array(np.vstack([com.COMx,com.COMy,com.COMz])).transpose()/1000
+    com_arr = np.array(np.vstack([com.x,com.y,com.z])).transpose()/1000
     # calculate the 1st and 2nd derivative of the com displacement
     vcom = np.gradient(com_arr[:,walkdir],axis=0)*fs
     # acom = np.gradient(vcom,axis=0)*fs
@@ -219,18 +219,18 @@ def main():
     # load CoM data
     com = pd.read_csv(file_in_com)
     # from joint data calculate the sampling frequency
-    fs = 1000/np.mean(np.diff(np.array(com.time)))
+    fs = 1/np.mean(np.diff(np.array(com.time)))
     # calculate the spatiotemporal parameters
     FPMl_est,FPMr_est,rsq_l,rsq_r,com_l = calcFPM(joint,com,events,fs)
     
-    file_out0 = folder_out + "/pi_FPM_rsq_l.yaml"
+    file_out0 = folder_out + "/pi_l_FPM.yaml"
     if not store_result(file_out0, rsq_l[24]):
         return -1
     print(colored(
         "r-squared left leg: {} stored in {}".format(round(rsq_l[24],2), file_out0),
         "green"))
     
-    file_out1 = folder_out + "/pi_FPM_rsql_r.yaml"
+    file_out1 = folder_out + "/pi_r_FPM.yaml"
     if not store_result(file_out1, rsq_r[24]):
         return -1
     print(colored(
