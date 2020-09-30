@@ -13,30 +13,29 @@ import yaml
 from scipy import optimize
 from termcolor import colored
 from .getevents import read_events
+from .marginsofstability import calcMOS
 from .colfun import prod_col,norm_col,transpose_col
 
-def calcFPE(joint,com,angMom,comIR,mass,trlinfo):
+def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
 # =============================================================================
 #     Calculate Foot Placement Estimator
 # =============================================================================
     # get time vector
-    t = joint.time/1000
+    t = joint.time
     # get sampling frequency
     fs = 1/np.nanmean(np.diff(t))
-    # determine the gravitational acceleration
+    # set the gravitational acceleration
     g = 9.81 #m/s
-    # get CoM position in m
-    com = com/1000;
     # create empty omega
     omega = np.ones([t.shape[0],3])*np.nan
     # get angular momentum matrix
-    H = np.vstack([angMom.H_x,angMom.H_y,angMom.H_z]).transpose()
+    H = np.vstack([angMom.x,angMom.y,angMom.z]).transpose()
     # rearrange IR and calculate omega   
     for i in range(comIR.shape[0]):
         # get inertial tensor and reshape 
-        IR = np.vstack([np.hstack([comIR.IRxx[i],comIR.IRxy[i],comIR.IRxz[i]]),
-                        np.hstack([comIR.IRyx[i],comIR.IRyy[i],comIR.IRyz[i]]),
-                        np.hstack([comIR.IRzx[i],comIR.IRzy[i],comIR.IRzz[i]])])
+        IR = np.vstack([np.hstack([comIR.xx[i],comIR.xy[i],comIR.xz[i]]),
+                        np.hstack([comIR.yx[i],comIR.yy[i],comIR.yz[i]]),
+                        np.hstack([comIR.zx[i],comIR.zy[i],comIR.zz[i]])])
         # multiply the angular momentum with the inverse of the inertial tensor
         omega[i,:] = np.matmul(np.transpose(H[i,:]),np.linalg.inv(IR))
 
@@ -44,8 +43,8 @@ def calcFPE(joint,com,angMom,comIR,mass,trlinfo):
     walkdir = np.argmax(np.ptp(np.array(l_foot),axis=0))
 
     # Bring the data into the direction of the angular momentum
-    com_arr = np.array(np.vstack([com.COMx,com.COMy,com.COMz])).transpose()
-    com_proj = np.array(np.vstack([com.COMx,com.COMy,com.COMz*0])).transpose()
+    com_arr = np.array(np.vstack([com.x,com.y,com.z])).transpose()
+    com_proj = np.array(np.vstack([com.x,com.y,com.z*0])).transpose()
     # calculate the velocity of the CoM and add the current treadmill speed [m/s]
     veloarr = [0,0,0]
     veloarr[walkdir] = trlinfo.tm_speed
@@ -81,19 +80,36 @@ def calcFPE(joint,com,angMom,comIR,mass,trlinfo):
     Jcom =  np.zeros([vcom.shape[0],1])*np.nan
 
     print('Optimisation of foot placement estimator...')
+    sys.stdout.write("[%s]" % ("." * 10))
+    sys.stdout.flush()
+    sys.stdout.write("\b" * (10+1))
+    steps = 9
     # loop over all frames
     for i in range(vcom.shape[0]):
+        if np.greater_equal((i/float(vcom.shape[0]))*100,steps):
+                sys.stdout.write("#")
+                sys.stdout.flush()
+                steps =steps+10
         # Get inertial tensor and reshape
-        IR = np.vstack([np.hstack([comIR.IRxx[i],comIR.IRxy[i],comIR.IRxz[i]]),
-                np.hstack([comIR.IRyx[i],comIR.IRyy[i],comIR.IRyz[i]]),
-                np.hstack([comIR.IRzx[i],comIR.IRzy[i],comIR.IRzz[i]])])
+        IR = np.vstack([np.hstack([comIR.xx[i],comIR.xy[i],comIR.xz[i]]),
+                np.hstack([comIR.yx[i],comIR.yy[i],comIR.yz[i]]),
+                np.hstack([comIR.zx[i],comIR.zy[i],comIR.zz[i]])])
         # calculate the moment of inertia in the new direction
         Jcom[i] = np.dot(np.dot(yaxis[i,:],IR),yaxis[i,:])
         if vcom_proj[i,0] == vcom_proj[i,0]:
             phi[i] = optimize.fmin(fFPE,phi[i-1],args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),disp=0)
             # phi[i] = optimize.brentq(fFPE,0,3,args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),xtol=1e-6,rtol=1e-7)             
             lFPE[i] = ((np.cos(theta_proj[i,1])*(com_arr[i,1]))/(np.cos(phi[i])))*np.sin(theta_proj[i,1]+phi[i])
-    return lFPE
+    sys.stdout.write("]\n") # end progress bar
+    gFPE = prod_col(R_proj,np.hstack((lFPE, np.zeros([vcom.shape[0],2]))))+com_arr;
+    lhs = np.array(events.l_heel_strike)*fs
+    rhs = np.array(events.r_heel_strike)*fs
+    lankle = np.transpose(np.vstack((joint.l_ankle_x,joint.l_ankle_y,joint.l_ankle_z)))
+    rankle = np.transpose(np.vstack((joint.r_ankle_x,joint.r_ankle_y,joint.r_ankle_z)))
+    lhsFPE = np.abs(lankle-com_arr)-np.abs(gFPE-com_arr)
+    rhsFPE = np.abs(rankle-com_arr)-np.abs(gFPE-com_arr)
+    dfpe = np.vstack((lhsFPE[lhs.astype(int),:],rhsFPE[rhs.astype(int),:]))
+    return dfpe
         
 def fFPE(phi,Jcom,hcom,g,m,omega,theta,vx,vy):
 # =============================================================================
@@ -114,6 +130,14 @@ def store_result(file_out, value):
     file.write('type: \'vector\'\nvalues: ')
     for line in value:
         file.write('\n'+format(line[0], '.5f'))
+    file.close()
+    return True
+
+def store_result2(file_out, value):
+    file = open(file_out, 'w')
+    file.write('type: \'vector\'\nvalues: ')
+    for line in value:
+        file.write('\n'+format(line, '.5f'))
     file.close()
     return True
 
@@ -220,8 +244,6 @@ def main():
     # load trail information file
     with open(file_in_trialinfo) as fileinfo:
     	trialinfo = yaml.full_load(fileinfo)
-    # from joint data calculate the sampling frequency
-    fs = 1000/np.mean(np.diff(np.array(com.time)))
 
     class strct():
         pass
@@ -237,16 +259,51 @@ def main():
     print('--> '+trlinfo.condition + ' ' + format(rr[1])+' deg')
     print('--> speed '+ format(rr[3])+' m/s')
     mass = 81
+    # calculate margins of stability
+    l_mos_ap,l_mos_ml,r_mos_ap,r_mos_ml,apdir,mldir= calcMOS(joint,com,events,trlinfo)
     #  Estimate the foot placement using the foot placement estimator 
-    fpe = calcFPE(joint,com,angmom,comIR,mass,trlinfo)
-    tos = np.hstack([events.l_heel_strike,events.r_heel_strike])
-    itos = np.round(np.sort(tos)*fs)
-    
-    file_out0 = folder_out + "/pi_fpe.yaml"
-    if not store_result(file_out0, fpe[itos.astype(int)]):
+    dfpe = calcFPE(joint,com,angmom,comIR,events,mass,trlinfo)
+
+    file_out0 = folder_out + "/pi_FPE_ap.yaml"
+    if not store_result2(file_out0,dfpe[:,apdir]):
         return -1
     print(colored(
-        "Foot Placement Estimator: vector with size {}x1, stored in {}".format(int(tos.shape[0]),file_out0),
+        "Foot Placement Estimator: vector with size {}x1, stored in {}".format(int(dfpe.shape[0]),file_out0),
+        "green"))
+    
+    file_out1 = folder_out + "/pi_FPE_ml.yaml"
+    if not store_result2(file_out1,dfpe[:,mldir]):
+        return -1
+    print(colored(
+        "Foot Placement Estimator: vector with size {}x1, stored in {}".format(int(dfpe.shape[0]),file_out1),
+        "green"))
+    
+    file_out2 = folder_out + "/pi_l_MOS_ap.yaml"
+    if not store_result2(file_out2, l_mos_ap):
+        return -1
+    print(colored(
+        "Margins of stability [ap]: vector with size {}x1, stored in {}".format(l_mos_ap.shape[0],file_out2),
+        "green"))
+    
+    file_out3 = folder_out + "/pi_r_MOS_ap.yaml"
+    if not store_result2(file_out3, r_mos_ap):
+        return -1
+    print(colored(
+        "Margins of stability [ap]: vector with size {}x1, stored in {}".format(r_mos_ml.shape[0],file_out3),
+        "green"))
+    
+    file_out4 = folder_out + "/pi_l_MOS_ml.yaml"
+    if not store_result2(file_out4, l_mos_ml):
+        return -1
+    print(colored(
+        "Margins of stability [ap]: vector with size {}x1, stored in {}".format(l_mos_ml.shape[0],file_out4),
+        "green"))
+    
+    file_out5 = folder_out + "/pi_r_MOS_ml.yaml"
+    if not store_result2(file_out5, r_mos_ml):
+        return -1
+    print(colored(
+        "Margins of stability [ap]: vector with size {}x1, stored in {}".format(r_mos_ml.shape[0],file_out5),
         "green"))
     return 0
     
