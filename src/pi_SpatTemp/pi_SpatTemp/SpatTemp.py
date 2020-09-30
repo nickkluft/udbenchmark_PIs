@@ -36,9 +36,12 @@ def calcSpatTemp(joint,events,fs):
     # get walking direction
     l_heel_xyz = np.transpose(np.vstack((joint.l_heel_x,joint.l_heel_y,joint.l_heel_z)))
     r_heel_xyz = np.transpose(np.vstack((joint.r_heel_x,joint.r_heel_y,joint.r_heel_z)))
+    # get hips
+    rhip = np.transpose(np.vstack((joint.l_hip_x,joint.l_hip_y,joint.l_hip_z)))
+    lhip = np.transpose(np.vstack((joint.r_hip_x,joint.r_hip_y,joint.r_hip_z)))
+    # get walking direction
     walkdir = np.argmax(np.ptp(r_heel_xyz,axis=0))
-    temp = [1,0]
-    mldir = temp[walkdir]
+    mldir = np.argmax(np.nanmean(np.abs(rhip-lhip),axis=0))
 
     # Step length
     idx_all = np.linspace(1,joint.shape[0],joint.shape[0])
