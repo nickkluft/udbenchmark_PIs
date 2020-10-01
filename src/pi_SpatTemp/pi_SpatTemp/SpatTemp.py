@@ -36,9 +36,12 @@ def calcSpatTemp(joint,events,fs):
     # get walking direction
     l_heel_xyz = np.transpose(np.vstack((joint.l_heel_x,joint.l_heel_y,joint.l_heel_z)))
     r_heel_xyz = np.transpose(np.vstack((joint.r_heel_x,joint.r_heel_y,joint.r_heel_z)))
+    # get hips
+    rhip = np.transpose(np.vstack((joint.l_hip_x,joint.l_hip_y,joint.l_hip_z)))
+    lhip = np.transpose(np.vstack((joint.r_hip_x,joint.r_hip_y,joint.r_hip_z)))
+    # get walking direction
     walkdir = np.argmax(np.ptp(r_heel_xyz,axis=0))
-    temp = [1,0]
-    mldir = temp[walkdir]
+    mldir = np.argmax(np.nanmean(np.abs(rhip-lhip),axis=0))
 
     # Step length
     idx_all = np.linspace(1,joint.shape[0],joint.shape[0])
@@ -54,19 +57,20 @@ def calcSpatTemp(joint,events,fs):
     class strct():
         pass
     out = strct()
-    out.tstride = np.mean(np.hstack((t_lstride,t_rstride)))
-    out.tstride_sd = np.std(np.hstack((t_lstride,t_rstride)))
-    out.sl = np.mean(np.hstack((l_sl,r_sl)))
-    out.sl_sd = np.std(np.hstack((l_sl,r_sl)))
-    out.sw = np.mean(np.hstack((l_sw,r_sw)))
-    out.sw_sd = np.std(np.hstack((l_sw,r_sw)))
+    out.tstride = np.hstack((t_lstride[0,:],t_rstride[0,:]))
+    out.r_sl =r_sl
+    out.l_sl =l_sl
+    out.sw = np.hstack((l_sw,r_sw))
     return out
 
-def store_result(file_out, value, sdvalue):
+def store_result(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'scalar\'\nvalue: ' + format(value, '.5f') + '\nSD:'+ format(sdvalue, '.5f'))
+    file.write('type: \'vector\'\nvalues: ')
+    for line in value:
+        file.write('\n'+format(line, '.5f'))
     file.close()
     return True
+
 
 USAGE = """usage: run_pi file_in_joint file_in_events folder_out
 file_in_joint: csv file containing the  positonal joint data
@@ -117,29 +121,36 @@ def main():
     # load joint data
     joint = pd.read_csv(file_in_joint)
     # from joint data calculate the sampling frequency
-    fs = 1000/np.mean(np.diff(np.array(joint.time)))
+    fs = 1/np.mean(np.diff(np.array(joint.time)))
     # calculate the spatiotemporal parameters
     out = calcSpatTemp(joint, events, fs)
-
     file_out0 = folder_out + "/pi_stridetime.yaml"
-    if not store_result(file_out0, out.tstride, out.tstride_sd):
+
+    if not store_result(file_out0, out.tstride):
         return -1
     print(colored(
-        "stride time: {} +- {} stored in {}".format(round(out.tstride,2),round(out.tstride_sd,2), file_out0),
+        "stride time: vector with size {}x1 stored in {}".format(np.size(out.tstride,0), file_out0),
         "green"))
 
     file_out1 = folder_out + "/pi_stepwidth.yaml"
-    if not store_result(file_out1, out.sw,out.sw_sd):
+    if not store_result(file_out1, out.sw):
         return -1
     print(colored(
-        "step width: {} +- {} stored in {}".format(round(out.sw,2),round(out.sw_sd,2), file_out1),
+        "step width: vector with size {}x1 stored in {}".format(np.size(out.sw,0), file_out1),
         "green"))
 
-    file_out2 = folder_out + "/pi_steplength.yaml"
-    if not store_result(file_out2, out.sl, out.sl_sd):
+    file_out2 = folder_out + "/pi_r_steplength.yaml"
+    if not store_result(file_out2, out.r_sl):
         return -1
     print(colored(
-        "step length: {} +- {} stored in {}".format(round(out.sl,2),round(out.sl_sd,2), file_out2),
+        "right step length: vector with size {}x1 stored in {}".format(np.size(out.r_sl,0), file_out2),
+        "green"))
+
+    file_out3 = folder_out + "/pi_l_steplength.yaml"
+    if not store_result(file_out3, out.l_sl):
+        return -1
+    print(colored(
+        "left step length: vector with size {}x1 stored in {}".format(np.size(out.l_sl,0), file_out3),
         "green"))
     return 0
 

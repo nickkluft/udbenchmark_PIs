@@ -1,4 +1,3 @@
-PyYAML
 scipy
 numpy
 pandas
