@@ -61,11 +61,11 @@ docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchma
 ```
 
 ```shell
-docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_fpm /in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_gaitEvents.yam /out
+docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_fpm /in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out
 ```
 
 ```shell
-docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_spattemp /in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_gaitEvents.yam /out
+docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_spattemp /in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out
 ```
 
 ```shell
