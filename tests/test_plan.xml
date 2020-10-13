@@ -5,15 +5,15 @@
       input_folder="data/input"
       output_folder="data/output/fpe"/>
 <test pi_name="run_fpm"
-      parameters="/in/subject_04_jointTrajectories_01.csv /in/subject_04_comTrajectories_01.csv /in/subject_04_gaitEvents_01 /out"
+      parameters="/in/subject_04_jointTrajectories_01.csv /in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out"
       input_folder="data/input"
       output_folder="data/output/fpm"/>
 <test pi_name="run_spattemp"
-      parameters="/in/subject_04_jointTrajectories_01.csv /in/subject_04_gaitEvents_01 /out"
+      parameters="/in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out"
       input_folder="data/input"
       output_folder="data/output/spattemp"/>
 <test pi_name="run_lde"
-      parameters="/in/subject_04_comTrajectories_01.csv /in/subject_04_gaitEvents_01 /out"
+      parameters="/in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out"
       input_folder="data/input"
       output_folder="data/output/lde"/>
 </test_plan>
