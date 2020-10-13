@@ -26,21 +26,20 @@ pip install -e src/pi_SpatTemp
 ## Usage
 
 ```term
-run_fpe tests/data/input/subject_04_jointTrajectories_01.csv tests/data/input/subject_04_comTrajectories_01.csv tests/data/input/subject_04_angMomentum_01.csv tests/data/input/subject_04_comItensor_01.csv tests/data/input/subject_04_gaitEvents_01 tests/data/input/subject_04_testbedLabel_01.yaml out_tests
+run_fpe tests/data/input/subject_04_cond_23_run_01_jointTrajectories.csv tests/data/input/subject_04_cond_23_run_01_com.csv tests/data/input/subject_04_cond_23_run_01_angMomentum.csv tests/data/input/subject_04_cond_23_run_01_comItensor.csv tests/data/input/subject_04_cond_23_run_01_gaitEvents_01 tests/data/input/subject_04_cond_23_run_01_testbedLabel_01.yaml out_tests
 ```
 
 ```term
-run_fpm tests/data/input/subject_04_jointTrajectories_01.csv tests/data/input/subject_04_comTrajectories_01.csv tests/data/input/subject_04_gaitEvents_01 out_tests
+run_fpm tests/data/input/subject_04_cond_23_run_01_jointTrajectories.csv tests/data/input/subject_04_cond_23_run_01_com.csv tests/data/input/subject_04_cond_23_run_01_gaitEvents.yaml out_tests
 ```
 
 ```term
-run_spattemp tests/data/input/subject_04_jointTrajectories_01.csv tests/data/input/subject_04_gaitEvents_01 out_tests
+run_spattemp tests/data/input/subject_04_cond_23_run_01_jointTrajectories.csv tests/data/input/subject_04_cond_23_run_01_gaitEvents.yaml out_tests
 ```
 
 ```term
-run_lde tests/data/input/subject_04_comTrajectories_01.csv tests/data/input/subject_04_gaitEvents_01 out_tests
+run_lde tests/data/input/subject_04_cond_23_run_01_com.csv tests/data/input/subject_04_cond_23_run_01_gaitEvents.yaml out_tests
 ```
-
 
 ## Build docker image
 
@@ -57,19 +56,19 @@ docker build . -t pi_udbenchmark
 Assuming the `tests/data/input` contains the input data, and that the directory `out_tests/` is **already created**, and will contain the PI output:
 
 ```shell
-docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_fpe /in/subject_04_jointTrajectories_01.csv /in/subject_04_comTrajectories_01.csv /in/subject_04_angMomentum_01.csv /in/subject_04_comItensor_01.csv /in/subject_04_gaitEvents_01 /in/subject_04_testbedLabel_01.yaml /out
+docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_fpe /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_angMomentum.csv /in/subject_04_cond_23_run_01_comItensor.csv /in/subject_04_cond_23_run_01_gaitEvents_01 /in/subject_04_cond_23_run_01_testbedLabel_01.yaml /out
 ```
 
 ```shell
-docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_fpm /in/subject_04_jointTrajectories_01.csv /in/subject_04_comTrajectories_01.csv /in/subject_04_gaitEvents_01 /out
+docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_fpm /in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out
 ```
 
 ```shell
-docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_spattemp /in/subject_04_jointTrajectories_01.csv /in/subject_04_gaitEvents_01 /out
+docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_spattemp /in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out
 ```
 
 ```shell
-docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_lde /in/subject_04_comTrajectories_01.csv /in/subject_04_gaitEvents_01 /out
+docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_lde /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out
 ```
 
 ## Test the generate docker image

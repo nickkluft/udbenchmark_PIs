@@ -63,10 +63,12 @@ def calcLDE(state,ws,fs,period,nnbs):
     sys.stdout.write("[%s]" % ("." * 10))
     sys.stdout.flush()
     sys.stdout.write("\b" * (10+1))
+    steps = 9
     for i_t in range(m):
-        if np.greater_equal((i_t/m)*100,round((100*i_t/m)+.499999)):
+        if np.greater_equal((i_t/m)*100,steps):
                sys.stdout.write("#")
                sys.stdout.flush()
+               steps =steps+10
         for i_d in range(n):
             difmat[:,i_d] = (np.subtract(state[:,i_d],state[i_t,i_d]))**2
         arridx1 = np.array([1,i_t-np.round(L1)])
@@ -100,14 +102,13 @@ def store_result(file_out, value):
     file.close()
     return True
 
-USAGE = """usage: run_pi file_in_joint file_in_events folder_out
-file_in_com: csv file containing the  positonal CoM data
-file_in_events: csv file containing the  timing of gait events
-folder_out: folder where the PI yaml files will be stored
+USAGE = """usage: run_pi file_in_comTrajectories file_in_events folder_out
+>> file_in_comTrajectories: csv file containing the  positonal CoM data
+>> file_in_events: csv file containing the  timing of gait events
+>> folder_out: folder where the PI yaml files will be stored
 """
 
 def main():
-
     if len(sys.argv) != 4:
         print(colored("Wrong input parameters !", "red"))
         print(colored(USAGE, "yellow"))
@@ -149,14 +150,14 @@ def main():
     # load events structure
     events = read_events(file_in_events)
     # from com data calculate the sampling frequency
-    fs = 1000/np.mean(np.diff(np.array(com.time)))
+    fs = 1/np.mean(np.diff(np.array(com.time)))
     # calculate the spatiotemporal parameters
     ws= 8
     period = 2.04
     nnbs = 4
-    ndim = 4
+    ndim = 5
     delay = 10
-    state = calcStateSpace(com.COMy,events,fs,ndim,delay)
+    state = calcStateSpace(com.y,events,fs,ndim,delay)
     diverg,locdiv = calcLDE(state,ws,fs,period,nnbs)
     print(locdiv[0][0])
     file_out0 = folder_out + "/pi_LDE.yaml"
