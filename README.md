@@ -51,13 +51,12 @@ Run the following command in order to create the docker image for this PI:
 docker build . -t pi_udbenchmark
 ```
 
-
 ## Launch the docker image
 
 Assuming the `tests/data/input` contains the input data, and that the directory `out_tests/` is **already created**, and will contain the PI output:
 
 ```shell
-docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_fpe /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_angMomentum.csv /in/subject_04_cond_23_run_01_comItensor.csv /in/subject_04_cond_23_run_01_gaitEvents_01 /in/subject_04_cond_23_run_01_testbedLabel_01.yaml /out
+docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_fpe /in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_angularMomentum.csv /in/subject_04_cond_23_run_01_inertiaTensor.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /in/cond_23_testbed.yaml /out
 ```
 
 ```shell
@@ -71,6 +70,24 @@ docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchma
 ```shell
 docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_lde /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out
 ```
+
+## Test the generate docker image
+
+A generic testing process is proposed in [Eurobench context](https://github.com/eurobench/docker_test).
+This requires `python3`.
+
+```shell
+# from the root repository
+# download the generic test file
+wget -O test_docker_call.py https://raw.githubusercontent.com/eurobench/docker_test/master/test_docker_call.py
+# set environment variables according to this repo spec.
+export TEST_PLAN=tests/test_plan.xml
+export DOCKER_IMAGE=pi_udbenchmark
+# launch the script test according to the plan
+python3 test_docker_call.py
+```
+
+Test plan is defined in file [test_plan.xml](tests/test_plan.xml).
 
 ## Acknowledgements
 
