@@ -12,27 +12,21 @@ events = read_events("subject_##_cond_##_run_##_gaitEvents.yaml")
 Copyright (C) 2020 Vrije Universiteit Amsterdam (FGB-Human Movement Sciences)
 Distributed under the pache 2.0 license.
 """
-
+import yaml
 def read_events(fname):
-    l_toe_off = None
-    r_toe_off = None
-    l_heel_strike = None
-    r_heel_strike = None
-    f = open(fname,'r')
-    txt = f.read()
-    txt.replace(" ","")
-    for ieve in range(4):
-        ibeg = txt.find("[")
-        iend = txt.find("]")
-        if txt[ibeg-11:ibeg-2] in ["l_toe_off"]:
-            l_toe_off = eval(txt[ibeg:iend+1])
-        if txt[ibeg-11:ibeg-2] in ["r_toe_off"]:
-            r_toe_off = eval(txt[ibeg:iend+1])
-        if txt[ibeg-15:ibeg-2] in ["l_heel_strike"]:
-            l_heel_strike = eval(txt[ibeg:iend+1])
-        if txt[ibeg-15:ibeg-2] in ["r_heel_strike"]:
-            r_heel_strike = eval(txt[ibeg:iend+1])
-        txt = txt[iend+1:]
+    with open(fname, 'r', encoding='utf8') as stream:
+        try:
+            yaml_eve = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    lto_txt = yaml_eve['l_toe_off']
+    rto_txt = yaml_eve['r_toe_off']
+    lhs_txt = yaml_eve['l_heel_strike']
+    rhs_txt = yaml_eve['r_heel_strike']
+    l_toe_off = eval("["+lto_txt.replace(" ",",")+"]")
+    r_toe_off = eval("["+rto_txt.replace(" ",",")+"]")
+    l_heel_strike = eval("[" + lhs_txt.replace(" ",",")+"]")
+    r_heel_strike = eval("[" + rhs_txt.replace(" ",",")+"]")
     class strct():
         pass
     events = strct()
@@ -41,7 +35,3 @@ def read_events(fname):
     events.l_heel_strike = l_heel_strike
     events.r_heel_strike = r_heel_strike
     return events
-
-
-
-
