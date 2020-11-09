@@ -127,17 +127,19 @@ def fFPE(phi,Jcom,hcom,g,m,omega,theta,vx,vy):
     
 def store_result(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'vector\'\nvalues: ')
+    file.write('---\ntype: \'vector\'\nvalues:')
     for line in value:
-        file.write('\n'+format(line[0], '.5f'))
+        file.write('\n '+format(line[0], '.5f'))
+    file.write('\n')
     file.close()
     return True
 
 def store_result2(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'vector\'\nvalues: ')
+    file.write('---\ntype: \'vector\'\nvalues:')
     for line in value:
-        file.write('\n'+format(line, '.5f'))
+        file.write('\n '+format(line, '.5f'))
+    file.write('\n')
     file.close()
     return True
 
