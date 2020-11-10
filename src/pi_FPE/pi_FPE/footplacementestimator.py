@@ -30,16 +30,16 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
     omega = np.ones([t.shape[0],3])*np.nan
     # get angular momentum matrix
     H = np.vstack([angMom.x,angMom.y,angMom.z]).transpose()
-    # rearrange IR and calculate omega   
+    # rearrange IR and calculate omega
     for i in range(comIR.shape[0]):
-        # get inertial tensor and reshape 
+        # get inertial tensor and reshape
         IR = np.vstack([np.hstack([comIR.xx[i],comIR.xy[i],comIR.xz[i]]),
                         np.hstack([comIR.yx[i],comIR.yy[i],comIR.yz[i]]),
                         np.hstack([comIR.zx[i],comIR.zy[i],comIR.zz[i]])])
         # multiply the angular momentum with the inverse of the inertial tensor
         omega[i,:] = np.matmul(np.transpose(H[i,:]),np.linalg.inv(IR))
 
-    l_foot = pd.concat([(joint.l_TTII_x+joint.l_heel_x)/2,(joint.l_TTII_y+joint.l_heel_y)/2,(joint.l_TTII_z+joint.l_heel_z)/2],axis=1)    
+    l_foot = pd.concat([(joint.l_TTII_x+joint.l_heel_x)/2,(joint.l_TTII_y+joint.l_heel_y)/2,(joint.l_TTII_z+joint.l_heel_z)/2],axis=1)
     walkdir = np.argmax(np.ptp(np.array(l_foot),axis=0))
 
     # Bring the data into the direction of the angular momentum
@@ -54,7 +54,7 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
     zaxis = np.divide((com_arr-com_proj),com_arr)
     xaxis = np.cross(yaxis,zaxis)
     yaxis = yaxis/norm_col(yaxis)
-    zaxis = zaxis/norm_col(zaxis)    
+    zaxis = zaxis/norm_col(zaxis)
     xaxis = xaxis/norm_col(xaxis)
     R_proj = np.hstack([xaxis,yaxis,zaxis])
     omega_proj = prod_col(transpose_col(R_proj),omega)
@@ -71,7 +71,7 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
         anglearr[nonwalkdir[walkdir]]
         angTM=np.tile(np.radians(anglearr),[vcom.shape[0],1])
     theta_proj = prod_col(transpose_col(R_proj),angTM)
-    
+
     # create empty matrices
     lFPE = np.zeros([vcom.shape[0],1])*np.nan
     phi =  np.zeros([vcom.shape[0],1])*np.nan
@@ -98,7 +98,7 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
         Jcom[i] = np.dot(np.dot(yaxis[i,:],IR),yaxis[i,:])
         if vcom_proj[i,0] == vcom_proj[i,0]:
             phi[i] = optimize.fmin(fFPE,phi[i-1],args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),disp=0)
-            # phi[i] = optimize.brentq(fFPE,0,3,args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),xtol=1e-6,rtol=1e-7)             
+            # phi[i] = optimize.brentq(fFPE,0,3,args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),xtol=1e-6,rtol=1e-7)
             lFPE[i] = ((np.cos(theta_proj[i,1])*(com_arr[i,1]))/(np.cos(phi[i])))*np.sin(theta_proj[i,1]+phi[i])
     sys.stdout.write("]\n") # end progress bar
     gFPE = prod_col(R_proj,np.hstack((lFPE, np.zeros([vcom.shape[0],2]))))+com_arr;
@@ -110,7 +110,7 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
     rhsFPE = np.abs(rankle-com_arr)-np.abs(gFPE-com_arr)
     dfpe = np.vstack((lhsFPE[lhs.astype(int),:],rhsFPE[rhs.astype(int),:]))
     return dfpe
-        
+
 def fFPE(phi,Jcom,hcom,g,m,omega,theta,vx,vy):
 # =============================================================================
 #     Foot placement estimator formula to optimze
@@ -124,7 +124,7 @@ def fFPE(phi,Jcom,hcom,g,m,omega,theta,vx,vy):
     t9 = hcom**2
     fpefun = (Jcom/2+(m*t5*t8*t9)/2)*((Jcom*omega+m*t3*t7*hcom*(vx*np.cos(t4)+vy*np.sin(t4)))**2)*1/((Jcom+m*t5*t8*t9)**2)-g*m*t3*t7*hcom+g*m*t3*t7*hcom*np.cos(t4)
     return fpefun**2
-    
+
 def store_result(file_out, value):
     file = open(file_out, 'w')
     file.write('---\ntype: \'vector\'\nvalues:')
@@ -166,9 +166,9 @@ def main():
     file_in_comIR = sys.argv[4]
     file_in_events = sys.argv[5]
     file_in_trialinfo = sys.argv[6]
-    folder_out = sys.argv[7]    
-    
-    
+    folder_out = sys.argv[7]
+
+
     # check input parameters are good
     if not os.path.exists(file_in_joint):
         print(colored("Input file {} does not exist".format(file_in_joint), "red"))
@@ -206,7 +206,7 @@ def main():
     if not os.path.isfile(file_in_trialinfo):
         print(colored("Input path {} is not a file".format(file_in_trialinfo), "red"))
         return -1
-    
+
 
     if not os.path.exists(folder_out):
         print(colored(
@@ -232,7 +232,7 @@ def main():
     if not os.path.isfile(file_in_trialinfo):
         print(colored("Output path {} is not a folder".format(file_in_trialinfo), "red"))
         return -1
-    
+
     # load events structure
     events = read_events(file_in_events)
     # load joint data
@@ -263,7 +263,7 @@ def main():
     mass = 81
     # calculate margins of stability
     l_mos_ap,l_mos_ml,r_mos_ap,r_mos_ml,apdir,mldir= calcMOS(joint,com,events,trlinfo)
-    #  Estimate the foot placement using the foot placement estimator 
+    #  Estimate the foot placement using the foot placement estimator
     dfpe = calcFPE(joint,com,angmom,comIR,events,mass,trlinfo)
 
     file_out0 = folder_out + "/pi_FPE_ap.yaml"
@@ -272,35 +272,35 @@ def main():
     print(colored(
         "Foot Placement Estimator: vector with size {}x1, stored in {}".format(int(dfpe.shape[0]),file_out0),
         "green"))
-    
+
     file_out1 = folder_out + "/pi_FPE_ml.yaml"
     if not store_result2(file_out1,dfpe[:,mldir]):
         return -1
     print(colored(
         "Foot Placement Estimator: vector with size {}x1, stored in {}".format(int(dfpe.shape[0]),file_out1),
         "green"))
-    
+
     file_out2 = folder_out + "/pi_l_MOS_ap.yaml"
     if not store_result2(file_out2, l_mos_ap):
         return -1
     print(colored(
         "Margins of stability [ap]: vector with size {}x1, stored in {}".format(l_mos_ap.shape[0],file_out2),
         "green"))
-    
+
     file_out3 = folder_out + "/pi_r_MOS_ap.yaml"
     if not store_result2(file_out3, r_mos_ap):
         return -1
     print(colored(
         "Margins of stability [ap]: vector with size {}x1, stored in {}".format(r_mos_ml.shape[0],file_out3),
         "green"))
-    
+
     file_out4 = folder_out + "/pi_l_MOS_ml.yaml"
     if not store_result2(file_out4, l_mos_ml):
         return -1
     print(colored(
         "Margins of stability [ap]: vector with size {}x1, stored in {}".format(l_mos_ml.shape[0],file_out4),
         "green"))
-    
+
     file_out5 = folder_out + "/pi_r_MOS_ml.yaml"
     if not store_result2(file_out5, r_mos_ml):
         return -1
@@ -308,4 +308,3 @@ def main():
         "Margins of stability [ap]: vector with size {}x1, stored in {}".format(r_mos_ml.shape[0],file_out5),
         "green"))
     return 0
-    
