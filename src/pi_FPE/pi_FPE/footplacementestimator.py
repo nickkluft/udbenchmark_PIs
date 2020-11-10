@@ -53,6 +53,7 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
     yaxis = np.vstack([H_y_ax[:,0],H_y_ax[:,1],np.zeros([1,com.shape[0]])]).transpose()
     zaxis = np.divide((com_arr-com_proj),com_arr)
     xaxis = np.cross(yaxis,zaxis)
+    yaxis = np.cross(zaxis,yaxis)
     yaxis = yaxis/norm_col(yaxis)
     zaxis = zaxis/norm_col(zaxis)    
     xaxis = xaxis/norm_col(xaxis)
@@ -75,10 +76,9 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
     # create empty matrices
     lFPE = np.zeros([vcom.shape[0],1])*np.nan
     phi =  np.zeros([vcom.shape[0],1])*np.nan
-    phi[0]=np.radians(3)
+    phi_in = np.radians(3)
     # fmsval =  np.zeros([vcom.shape[0],1])*np.nan
     Jcom =  np.zeros([vcom.shape[0],1])*np.nan
-
     print('Optimisation of foot placement estimator...')
     sys.stdout.write("[%s]" % ("." * 10))
     sys.stdout.flush()
@@ -97,8 +97,9 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
         # calculate the moment of inertia in the new direction
         Jcom[i] = np.dot(np.dot(yaxis[i,:],IR),yaxis[i,:])
         if vcom_proj[i,0] == vcom_proj[i,0]:
-            phi[i] = optimize.fmin(fFPE,phi[i-1],args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),disp=0)
+            phi[i] = optimize.fmin(fFPE,phi_in,args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),disp=0)
             # phi[i] = optimize.brentq(fFPE,0,3,args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),xtol=1e-6,rtol=1e-7)             
+            phi_in = phi[i]
             lFPE[i] = ((np.cos(theta_proj[i,1])*(com_arr[i,1]))/(np.cos(phi[i])))*np.sin(theta_proj[i,1]+phi[i])
     sys.stdout.write("]\n") # end progress bar
     gFPE = prod_col(R_proj,np.hstack((lFPE, np.zeros([vcom.shape[0],2]))))+com_arr;
