@@ -65,9 +65,10 @@ def calcSpatTemp(joint,events,fs):
 
 def store_result(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'vector\'\nvalues: ')
+    file.write('---\ntype: \'vector\'\nvalues:')
     for line in value:
-        file.write('\n'+format(line, '.5f'))
+        file.write('\n '+format(line, '.5f'))
+    file.write('\n')
     file.close()
     return True
 

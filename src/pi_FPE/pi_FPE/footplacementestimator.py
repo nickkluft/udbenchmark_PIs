@@ -44,15 +44,17 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
 
     # Bring the data into the direction of the angular momentum
     com_arr = np.array(np.vstack([com.x,com.y,com.z])).transpose()
-    com_proj = np.array(np.vstack([com.x,com.y,com.z*0])).transpose()
+    com_proj = np.array(np.vstack([com.x,com.y*0,com.z])).transpose()
     # calculate the velocity of the CoM and add the current treadmill speed [m/s]
     veloarr = [0,0,0]
     veloarr[walkdir] = trlinfo.tm_speed
     vcom = (np.gradient(com_arr,axis=0)*fs)+veloarr
     H_y_ax = H+np.cross((com_arr-com_proj)*mass,vcom)
-    yaxis = np.vstack([H_y_ax[:,0],H_y_ax[:,1],np.zeros([1,com.shape[0]])]).transpose()
+    yaxis = np.vstack([H_y_ax[:,0],np.zeros([1,com.shape[0]]),H_y_ax[:,2]]).transpose()
     zaxis = np.divide((com_arr-com_proj),com_arr)
     xaxis = np.cross(yaxis,zaxis)
+    yaxis = np.cross(zaxis,xaxis)
+    # normalize axes
     yaxis = yaxis/norm_col(yaxis)
     zaxis = zaxis/norm_col(zaxis)    
     xaxis = xaxis/norm_col(xaxis)
@@ -67,7 +69,7 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
         anglearr[walkdir]=trlinfo.tm_angle
         angTM=np.tile(np.radians(anglearr),[vcom.shape[0],1])
     else:# pitch
-        nonwalkdir = np.array([1,0])
+        nonwalkdir = np.array([2,0])
         anglearr[nonwalkdir[walkdir]]
         angTM=np.tile(np.radians(anglearr),[vcom.shape[0],1])
     theta_proj = prod_col(transpose_col(R_proj),angTM)
@@ -75,10 +77,9 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
     # create empty matrices
     lFPE = np.zeros([vcom.shape[0],1])*np.nan
     phi =  np.zeros([vcom.shape[0],1])*np.nan
-    phi[0]=np.radians(3)
+    phi_in = np.radians(3)
     # fmsval =  np.zeros([vcom.shape[0],1])*np.nan
     Jcom =  np.zeros([vcom.shape[0],1])*np.nan
-
     print('Optimisation of foot placement estimator...')
     sys.stdout.write("[%s]" % ("." * 10))
     sys.stdout.flush()
@@ -97,16 +98,18 @@ def calcFPE(joint,com,angMom,comIR,events,mass,trlinfo):
         # calculate the moment of inertia in the new direction
         Jcom[i] = np.dot(np.dot(yaxis[i,:],IR),yaxis[i,:])
         if vcom_proj[i,0] == vcom_proj[i,0]:
-            phi[i] = optimize.fmin(fFPE,phi[i-1],args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),disp=0)
+            phi[i] = optimize.fmin(fFPE,phi_in,args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),disp=0)
             # phi[i] = optimize.brentq(fFPE,0,3,args = (Jcom[i,0],com_proj[i,2],g,mass,omega_proj[i,1],theta_proj[i,1],vcom_proj[i,0],vcom_proj[i,1]),xtol=1e-6,rtol=1e-7)             
+            phi_in = phi[i]
             lFPE[i] = ((np.cos(theta_proj[i,1])*(com_arr[i,1]))/(np.cos(phi[i])))*np.sin(theta_proj[i,1]+phi[i])
     sys.stdout.write("]\n") # end progress bar
+
     gFPE = prod_col(R_proj,np.hstack((lFPE, np.zeros([vcom.shape[0],2]))))+com_arr;
     lhs = np.array(events.l_heel_strike)*fs
     rhs = np.array(events.r_heel_strike)*fs
     lankle = np.transpose(np.vstack((joint.l_ankle_x,joint.l_ankle_y,joint.l_ankle_z)))
     rankle = np.transpose(np.vstack((joint.r_ankle_x,joint.r_ankle_y,joint.r_ankle_z)))
-    lhsFPE = np.abs(lankle-com_arr)-np.abs(gFPE-com_arr)
+    lhsFPE = np.abs(lankle-com_arr)-np.abs(gFPE-com_arr) # negative FPE than FPE is further away with respect to COM
     rhsFPE = np.abs(rankle-com_arr)-np.abs(gFPE-com_arr)
     dfpe = np.vstack((lhsFPE[lhs.astype(int),:],rhsFPE[rhs.astype(int),:]))
     return dfpe
@@ -127,17 +130,19 @@ def fFPE(phi,Jcom,hcom,g,m,omega,theta,vx,vy):
     
 def store_result(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'vector\'\nvalues: ')
+    file.write('---\ntype: \'vector\'\nvalues:')
     for line in value:
-        file.write('\n'+format(line[0], '.5f'))
+        file.write('\n '+format(line[0], '.5f'))
+    file.write('\n')
     file.close()
     return True
 
 def store_result2(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'vector\'\nvalues: ')
+    file.write('---\ntype: \'vector\'\nvalues:')
     for line in value:
-        file.write('\n'+format(line, '.5f'))
+        file.write('\n '+format(line, '.5f'))
+    file.write('\n')
     file.close()
     return True
 

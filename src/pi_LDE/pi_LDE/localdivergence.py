@@ -98,7 +98,7 @@ def calcLDE(state,ws,fs,period,nnbs):
 
 def store_result(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'scalar\'\nvalue: ' + format(round(value,2), '.5f'))
+    file.write('---\ntype: \'scalar\'\nvalue: ' + format(round(value,2), '.5f')+'\n')
     file.close()
     return True
 

@@ -153,7 +153,7 @@ def calcFPM(joint,com,events,fs):
 
 def store_result(file_out, value):
     file = open(file_out, 'w')
-    file.write('type: \'scalar\'\nvalue: ' + format(value, '.5f'))
+    file.write('---\ntype: \'scalar\'\nvalue: ' + format(value, '.5f') +'\n')
     file.close()
     return True
 

@@ -26,7 +26,7 @@ pip install -e src/pi_SpatTemp
 ## Usage
 
 ```term
-run_fpe tests/data/input/subject_04_cond_23_run_01_jointTrajectories.csv tests/data/input/subject_04_cond_23_run_01_com.csv tests/data/input/subject_04_cond_23_run_01_angMomentum.csv tests/data/input/subject_04_cond_23_run_01_comItensor.csv tests/data/input/subject_04_cond_23_run_01_gaitEvents_01 tests/data/input/subject_04_cond_23_run_01_testbedLabel_01.yaml out_tests
+run_fpe tests/data/input/subject_04_cond_23_run_01_jointTrajectories.csv tests/data/input/subject_04_cond_23_run_01_com.csv tests/data/input/subject_04_cond_23_run_01_angularMomentum.csv tests/data/input/subject_04_cond_23_run_01_inertiaTensor.csv tests/data/input/subject_04_cond_23_run_01_gaitEvents.yaml tests/data/input/cond_23_testbed.yaml out_tests
 ```
 
 ```term
