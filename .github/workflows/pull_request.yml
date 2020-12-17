@@ -1,3 +1,5 @@
+# This is a basic workflow to help you get started with Actions
+
 name: pull_request
 
 # Controls when the action will run. Triggers the workflow on push or pull request
@@ -32,7 +34,7 @@ jobs:
     - name: test the docker image
       env:
         TEST_PLAN: tests/test_plan.xml
-        # not accepted as the repo contains uppercase letters
+        #not accepted as the repo contains uppercase letters
         #DOCKER_IMAGE: ${{ github.event.repository.name }}:${{ github.head_ref }}
         DOCKER_IMAGE: pi_udbenchmark:${{ github.head_ref }}
       run:  python3 test_docker_call.py
