@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <test_plan>
 <test pi_name="run_fpe"
-      parameters="/in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_angularMomentum.csv /in/subject_04_cond_23_run_01_inertiaTensor.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /in/cond_23_testbed.yaml /out"
+      parameters="/in/subject_04_cond_23_run_01_jointTrajectories.csv /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_angularMomentum.csv /in/subject_04_cond_23_run_01_inertiaTensor.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /in/condition_23.yaml /out"
       input_folder="data/input"
       output_folder="data/output/fpe"/>
 <test pi_name="run_fpm"
