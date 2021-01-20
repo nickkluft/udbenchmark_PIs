@@ -41,9 +41,11 @@ run_spattemp tests/data/input/subject_04_cond_23_run_01_jointTrajectories.csv te
 run_lde tests/data/input/subject_04_cond_23_run_01_com.csv tests/data/input/subject_04_cond_23_run_01_gaitEvents.yaml out_tests
 ```
 
-## Build docker image
+## Docker image
 
-_(only tested under linux)_
+### Build from source
+
+_(only tested under Linux)_
 
 Run the following command in order to create the docker image for this PI:
 
@@ -51,7 +53,16 @@ Run the following command in order to create the docker image for this PI:
 docker build . -t pi_udbenchmark
 ```
 
-## Launch the docker image
+### Use official image
+
+An image is available from the [Docker Hub](https://hub.docker.com/r/eurobenchtest/pi_udbenchmark).
+It can be directly installed on a Linux machine using:
+
+```term
+docker pull eurobenchtest/pi_udbenchmark
+```
+
+### Launch the docker image
 
 Assuming the `tests/data/input` contains the input data, and that the directory `out_tests/` is **already created**, and will contain the PI output:
 
@@ -71,7 +82,7 @@ docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchma
 docker run --rm -v $PWD/tests/data/input:/in -v $PWD/out_tests:/out pi_udbenchmark run_lde /in/subject_04_cond_23_run_01_com.csv /in/subject_04_cond_23_run_01_gaitEvents.yaml /out
 ```
 
-## Test the generate docker image
+### Test the generate docker image
 
 A generic testing process is proposed in [Eurobench context](https://github.com/eurobench/docker_test).
 This requires `python3`.
