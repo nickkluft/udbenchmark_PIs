@@ -18,7 +18,7 @@ def calcStateSpace(sig,events,fs,n_dim,delay):
 # =============================================================================
     from scipy.interpolate import interp1d
     print("creating state space...")
-    # make sorted heel strike list 
+    # make sorted heel strike list
     lhs = np.array(events.l_heel_strike)*fs
     rhs = np.array(events.r_heel_strike)*fs
     meve = np.array([])
@@ -26,7 +26,7 @@ def calcStateSpace(sig,events,fs,n_dim,delay):
     arr_neve = np.hstack((np.zeros(rhs.shape),np.ones(lhs.shape)))
     meve = np.vstack((arr_ieve,arr_neve))
     meve = meve[:,meve[0,:].argsort()]
-    # get number of strides and samples 
+    # get number of strides and samples
     n_samples = (meve.shape[1]-1)*100
     # new signal without trailinabs
     idx_truesamp = int(meve[0,0]-1)
@@ -39,7 +39,7 @@ def calcStateSpace(sig,events,fs,n_dim,delay):
     # sligthly different than Sjoerd's method (does not extrapolate data)
     fsig_int = interp1d(t_new,sig_new,kind = 'cubic')
     sig_int = fsig_int(t_inter)
-    # create empty statespace array    
+    # create empty statespace array
     state = np.zeros([n_samples-(n_dim-1)*delay,n_dim])
     #create the state space now:
     for i_dim in range(n_dim):
@@ -80,16 +80,16 @@ def calcLDE(state,ws,fs,period,nnbs):
         for i_nn in range(nnbs):
             div_tmp = np.subtract(state[i_t:i_t+int(win),:],state[idx_sort[i_nn]:(idx_sort[i_nn]+int(win)),:])
             divmat[i_t*nnbs+i_nn,:] = np.sum(div_tmp**2,1)**.5 # track divergence, and store
-    sys.stdout.write("]\n") # end progress bar  
+    sys.stdout.write("]\n") # end progress bar
     divergence = np.nanmean(np.log(divmat),0)
     xdiv = np.linspace(1,divergence.shape[0],divergence.shape[0])/fs
     xs = xdiv[1:int(np.floor(L1))]
-    Ps = np.polynomial.polynomial.polyfit(xs,divergence[1:int(np.floor(L1))],1)    
+    Ps = np.polynomial.polynomial.polyfit(xs,divergence[1:int(np.floor(L1))],1)
 
     lde = np.ones([1,2])*np.nan
     lde[0] = Ps[1]
-    
-    L2 = np.round(4*period*fs)    
+
+    L2 = np.round(4*period*fs)
     if L2 < win:
         idxl = (np.linspace(0,win-L2-1,int(win-L2))+int(L2))
         Pl = np.polynomial.Polynomial.fit(idxl/fs,divergence[int(idxl[0]):int(idxl[-1])],1)
@@ -116,9 +116,9 @@ def main():
 
     file_in_com = sys.argv[1]
     file_in_events = sys.argv[2]
-    folder_out = sys.argv[3]    
-    
-    
+    folder_out = sys.argv[3]
+
+
     # check input parameters are good
     if not os.path.exists(file_in_com):
         print(colored("Input file {} does not exist".format(file_in_com), "red"))
@@ -144,7 +144,7 @@ def main():
     if not os.path.isfile(file_in_events):
         print(colored("Output path {} is not a folder".format(file_in_com), "red"))
         return -1
-    
+
     # load joint data
     com = pd.read_csv(file_in_com)
     # load events structure
@@ -169,7 +169,6 @@ def main():
     return 0
 
 
-    
 
 
-    
+

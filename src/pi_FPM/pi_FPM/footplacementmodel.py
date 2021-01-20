@@ -27,7 +27,7 @@ def timenormalize_step(signal,start,stop):
         del stop[0]
         print('Delete first sample of stop')
     if start.shape[0]>stop.shape[0]:
-        start = start[0:stop.shape[0]]     
+        start = start[0:stop.shape[0]]
         print('remove trailing part start')
     if stop.shape[0]>start.shape[0]:
         stop = start[0:start.shape[0]]
@@ -49,7 +49,7 @@ def timenormalize_step(signal,start,stop):
             cycle[:,i] = fsig_int(np.linspace(0,50,51))
         sigoi = None
     return cycle
-    
+
 
 def calcFPM(joint,com,events,fs):
 # =============================================================================
@@ -60,7 +60,7 @@ def calcFPM(joint,com,events,fs):
     rto = np.round(np.array(events.r_toe_off)*fs)
     rhs = np.round(np.array(events.r_heel_strike)*fs)
     lto = np.round(np.array(events.l_toe_off)*fs)
-    
+
     meve = np.array([])
     arr_ieve = np.hstack((lhs,rto,rhs,lto))
     arr_neve = np.hstack((np.ones(lhs.shape[0])*0,np.ones(rto.shape[0]),np.ones(rhs.shape[0])*2,np.ones(lto.shape[0])*3))
@@ -74,7 +74,7 @@ def calcFPM(joint,com,events,fs):
     rto = meve[0,np.where(meve[1,:]==1)]
     rhs = meve[0,np.where(meve[1,:]==2)]
     lto = meve[0,np.where(meve[1,:]==3)]
-    
+
     # get foot position from joint
     lfoot = np.array(pd.concat([(joint.l_TTII_x+joint.l_heel_x)/2,(joint.l_TTII_y+joint.l_heel_y)/2,(joint.l_TTII_z+joint.l_heel_z)/2],axis=1)/1000)
     rfoot = np.array(pd.concat([(joint.r_TTII_x+joint.r_heel_x)/2,(joint.r_TTII_y+joint.r_heel_y)/2,(joint.r_TTII_z+joint.r_heel_z)/2],axis=1)/1000)
@@ -211,7 +211,7 @@ def main():
     if not os.path.isfile(file_in_events):
         print(colored("Output path {} is not a folder".format(file_in_joint), "red"))
         return -1
-    
+
     # load events structure
     events = read_events(file_in_events)
     # load joint data
@@ -222,14 +222,14 @@ def main():
     fs = 1/np.mean(np.diff(np.array(com.time)))
     # calculate the spatiotemporal parameters
     FPMl_est,FPMr_est,rsq_l,rsq_r,com_l = calcFPM(joint,com,events,fs)
-    
+
     file_out0 = folder_out + "/pi_l_FPM.yaml"
     if not store_result(file_out0, rsq_l[24]):
         return -1
     print(colored(
         "r-squared left leg: {} stored in {}".format(round(rsq_l[24],2), file_out0),
         "green"))
-    
+
     file_out1 = folder_out + "/pi_r_FPM.yaml"
     if not store_result(file_out1, rsq_r[24]):
         return -1
@@ -237,7 +237,6 @@ def main():
         "r-squared right leg: {} stored in {}".format(round(rsq_r[24],2), file_out1),
         "green"))
     return 0
-    
 
 
 
@@ -248,4 +247,4 @@ def main():
 
 
 
-    
+
